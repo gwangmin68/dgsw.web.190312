@@ -1,21 +1,33 @@
 package kr.hs.dgsw.web_get;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
 
 @RestController
 public class GetController {
     @GetMapping("/greeting")
     public String greeting(
-            @RequestParam(required = false, defaultValue = "NONAME") String to,
-            @RequestParam(required = false, defaultValue = "Hello") String say)
+            @RequestParam(required = false/*필수 입력 아님*/, defaultValue = "Hello") String say,
+            @RequestParam(required = false, defaultValue = "NONAME") String to)
     {
         return say + ", " + to;
     }
 
-    @GetMapping("/greeting1/say/to")
-    public String greeting1(){
-        return "";
+    @GetMapping(
+            value = {"/greeting1/{say}/{to}",
+            "/greeting1/{say}",
+            "/greeting1//{to}",
+            "/greeting1"}
+    )
+    public String greeting1(
+            @PathVariable/*경로의 형태를 띄는 변수*/ Optional<String> say,
+            @PathVariable Optional<String> to
+    ){
+        String tmp = to.isPresent() ? to.get() : "NONAME";
+        return (say.isPresent() ? say.get() : "hello") + ", " + tmp;
     }
 }
